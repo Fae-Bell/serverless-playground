@@ -163,9 +163,17 @@ class UserService {
     const cmd = new UpdateCommand(params);
     const { $metadata, Attributes } = await this.docClient.send(cmd);
     if ($metadata.httpStatusCode !== 200) {
-      return [$metadata.httpStatusCode, "Could not update user"];
+      return [$metadata.httpStatusCode, { msg: "Could not update user" }];
     }
-    return [200, Attributes];
+    return [
+      200,
+      new User(
+        Attributes.userId,
+        Attributes.name,
+        Attributes.email,
+        Attributes.dateOfBirth
+      ),
+    ];
   }
   async delete(userId) {
     const params = {
@@ -178,110 +186,121 @@ class UserService {
 
     const command = new DeleteCommand(params);
     const { Attributes } = await this.docClient.send(command);
-    return [200, Attributes];
+    return [
+      200,
+      new User(
+        Attributes.userId,
+        Attributes.name,
+        Attributes.email,
+        Attributes.dateOfBirth
+      ),
+    ];
   }
 }
 
 class UserHandler {
-  constructor(expressApp, userService) {
-    this.app = expressApp;
+  constructor(userService) {
     this.userService = userService;
   }
-  setupRoutes() {
-    this.app.get("/users", async (req, res) => {
-      try {
-        const [respCode, response] = await userService.getAll();
-        if (respCode === 200) {
-          res.json(response);
-        } else {
-          res.status(respCode).json({ error: response });
-        }
-      } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "Could not retrieve users" });
+  async getAll(req, res) {
+    try {
+      const [respCode, response] = await this.userService.getAll();
+      if (respCode === 200) {
+        res.json(response);
+      } else {
+        res.status(respCode).json({ error: response });
       }
-    });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Could not retrieve users" });
+    }
+  }
+  async get(req, res) {
+    try {
+      const [respCode, response] = await this.userService.get(
+        req.params.userId
+      );
+      if (respCode === 200) {
+        res.json(response);
+      } else {
+        res.status(respCode).json({ error: response });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Could not retrieve user" });
+    }
+  }
+  async post(req, res) {
+    try {
+      const { userId, name, email, dateOfBirth } = req.body;
+      const user = new User(userId, name, email, dateOfBirth);
+      const [respCode, response] = await this.userService.post(user);
+      if (respCode === 200) {
+        res.json(response);
+      } else {
+        res.status(respCode).json({ error: response });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Could not create user" });
+    }
+  }
+  async put(req, res) {
+    try {
+      const { name, email, dateOfBirth } = req.body;
+      const { userId } = req.params;
+      const user = new User(userId, name, email, dateOfBirth);
+      const [respCode, response] = await this.userService.put(user);
+      if (respCode === 200) {
+        res.json(response);
+      } else {
+        res.status(respCode).json({ error: response });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Could not update user" });
+    }
+  }
+  async patch(req, res) {
+    try {
+      const { name, email, dateOfBirth } = req.body;
+      const { userId } = req.params;
+      const user = new User(userId, name, email, dateOfBirth);
+      const [respCode, response] = await this.userService.patch(user);
+      if (respCode === 200) {
+        res.json(response);
+      } else {
+        res.status(respCode).json({ error: response });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Could not update user" });
+    }
+  }
+  async delete(req, res) {
+    try {
+      const [respCode, response] = await this.userService.delete(
+        req.params.userId
+      );
+      if (respCode === 200) {
+        res.json(response);
+      } else {
+        res.status(respCode).json({ error: response });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Could not delete user" });
+    }
+  }
 
-    this.app.post("/users", async (req, res) => {
-      try {
-        const { userId, name, email, dateOfBirth } = req.body;
-        const user = new User(userId, name, email, dateOfBirth);
-        const [respCode, response] = await userService.post(user);
-        if (respCode === 200) {
-          res.json(response);
-        } else {
-          res.status(respCode).json({ error: response });
-        }
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Could not create user" });
-      }
-    });
-
-    this.app.put("/users/:userId", async (req, res) => {
-      try {
-        const { name, email, dateOfBirth } = req.body;
-        const { userId } = req.params;
-        const user = new User(userId, name, email, dateOfBirth);
-        const [respCode, response] = await userService.put(user);
-        if (respCode === 200) {
-          res.json(response);
-        } else {
-          res.status(respCode).json({ error: response });
-        }
-      } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "Could not update user" });
-      }
-    });
-
-    this.app.patch("/users/:userId", async (req, res) => {
-      try {
-        const { name, email, dateOfBirth } = req.body;
-        const { userId } = req.params;
-        const user = new User(userId, name, email, dateOfBirth);
-        const [respCode, response] = await userService.patch(user);
-        if (respCode === 200) {
-          res.json(response);
-        } else {
-          res.status(respCode).json({ error: response });
-        }
-      } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "Could not update user" });
-      }
-    });
-
-    this.app.get("/users/:userId", async (req, res) => {
-      try {
-        const [respCode, response] = await userService.get(req.params.userId);
-        if (respCode === 200) {
-          res.json(response);
-        } else {
-          res.status(respCode).json({ error: response });
-        }
-      } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "Could not retrieve user" });
-      }
-    });
-
-    this.app.delete("/users/:userId", async (req, res) => {
-      try {
-        const [respCode, response] = await userService.delete(
-          req.params.userId
-        );
-        if (respCode === 200) {
-          res.json(response);
-        } else {
-          res.status(respCode).json({ error: response });
-        }
-      } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "Could not delete user" });
-      }
-    });
+  setupRoutes(app) {
+    app.get("/users", this.getAll.bind(this));
+    app.post("/users", this.post.bind(this));
+    app.put("/users/:userId", this.put.bind(this));
+    app.patch("/users/:userId", this.patch.bind(this));
+    app.get("/users/:userId", this.get.bind(this));
+    app.delete("/users/:userId", this.delete.bind(this));
   }
 }
 
-module.exports = { UserService, UserHandler };
+module.exports = { User, UserService, UserHandler };

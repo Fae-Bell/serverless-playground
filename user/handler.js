@@ -4,7 +4,7 @@ const { DynamoDBDocumentClient } = require("@aws-sdk/lib-dynamodb");
 
 const express = require("express");
 const serverless = require("serverless-http");
-const { UserService, UserHandler } = require("users");
+const { UserService, UserHandler } = require("./users");
 
 const app = express();
 
@@ -14,9 +14,9 @@ const docClient = DynamoDBDocumentClient.from(client);
 app.use(express.json());
 
 const userService = new UserService(docClient);
-const userHandler = new UserHandler(app, userService);
+const userHandler = new UserHandler(userService);
 
-userHandler.setupRoutes();
+userHandler.setupRoutes(app);
 
 app.use((req, res, next) => {
   return res.status(404).json({

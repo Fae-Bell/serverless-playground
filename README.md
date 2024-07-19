@@ -36,22 +36,16 @@ Update Serverless
 
 ## Deploying
 
-1. Run serverless dev to create initial foundation, like cloud formation and dynamo
-1. Run serverless deploy to push the new lambda endpoint and gateway API.
+- Run `serverless dev` to create a local instanced version for testing
+- Run `serverless deploy` to push the builds into AWS and be available publically
 
-Run Serverless Dev:
-
-`serverless dev`
-
-Run Serverless Deploy:
-
-`serverless deploy`
-
-The last command should return a url that you can use for actual testing. Eg: https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com
+Either command will return a url that you can use for actual testing. Eg: https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com
 
 ## Testing
 
 ### Unit
+
+Unit tests have been written for the user endpoints. To run them, simply go into the `/user` folder and run `npm test` after you've run `npm install`
 
 ### Endpoints
 
@@ -64,8 +58,10 @@ The following endpoints are available:
 - GET `/users/:userId`
   - Gets a single Item from Dynamo using the userId as a key
 - PUT `/users/:userId`
-  - Overwrites the user with the body of the requesst values, using the userId as a Key: `name`, `email`, `dateOfBirth`
+  - Overwrites the entire stored user with the request values, using the userId param as a Key: `name`, `email`, `dateOfBirth`
 - PATCH `/users/:userId`
-  - Allows for partial updates of a user based on the body of the request values, based on the userId as a Key: `name`, `email`, `dateOfBirth`
+  - Overwrites PARTS of the stored user with the request values, using the userId param as a Key: `name`, `email`, `dateOfBirth`
 - DELETE `/users/:userId`
   - Deletes a user using th euserId as a Key
+
+For ease of testing, I've included an export of a Postman Collection which has endpoints for each of the ones listed above, along with some test data. The only thing that needs to be done for it to work after import is to update the "Host" variable in the Collection to the one that your `serverless dev` or `serverless deploy` returns.

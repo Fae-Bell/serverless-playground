@@ -1,0 +1,152 @@
+{
+  "info": {
+    "_postman_id": "49316d5c-6eab-468a-9823-a3b36ce542db",
+    "name": "ServerlessTesting",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "17436294"
+  },
+  "item": [
+    {
+      "name": "Get All",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{Host}}/users",
+          "host": ["{{Host}}"],
+          "path": ["users"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"userId\": \"123\",\n    \"name\": \"Fae\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{Host}}/users/123",
+          "host": ["{{Host}}"],
+          "path": ["users", "123"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Post",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"userId\": \"124\",\n    \"name\": \"Justin\",\n    \"email\": \"test@gmail.com\",\n    \"dateOfBirth\": \"1990/04/01\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{Host}}/users",
+          "host": ["{{Host}}"],
+          "path": ["users"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Put",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Justin\",\n    \"email\": \"test@gmail.com\",\n    \"dateOfBirth\": \"1990/04/01\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{Host}}/users/124",
+          "host": ["{{Host}}"],
+          "path": ["users", "124"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Patch",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"David\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{Host}}/users/124",
+          "host": ["{{Host}}"],
+          "path": ["users", "124"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{Host}}/users/124",
+          "host": ["{{Host}}"],
+          "path": ["users", "124"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "Host",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
